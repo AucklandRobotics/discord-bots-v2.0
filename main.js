@@ -153,7 +153,7 @@ async function getCurrentMilestone(googleClient) {
   ));
 
   const bestMilestone = milestones.reduce((best, milestone) => (
-    totalHours > milestone ? milestone : best
+    totalHours >= milestone ? milestone : best
   ));
 
   return bestMilestone;
