@@ -127,6 +127,9 @@ async function getCurrentMilestone(googleClient) {
     auth: googleClient,
     range: 'date_hours_table',
     spreadsheetId: process.env.SPREADSHEET_ID,
+
+    // Format numbers such that they can be parsed into numbers.
+    valueRenderOption: 'UNFORMATTED_VALUE',
   });
 
   const countedHours = dateHoursTable.data.values.map(([date, hours]) => {
