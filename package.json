@@ -1,0 +1,16 @@
+{
+  "name": "aura-volunteers-bot",
+  "description": "A Discord chat bot that logs volunteering hours to a spreadsheet",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AucklandRobotics/discord-volunteers-bot"
+  },
+  "scripts": {
+    "start": "node main.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "googleapis": "^38.0.0"
+  }
+}
