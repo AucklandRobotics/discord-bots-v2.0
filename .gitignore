@@ -1,3 +1,5 @@
 node_modules/
 .npm
 npm-debug.log*
+service-account.json
+config.json

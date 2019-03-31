@@ -1,3 +1,7 @@
+const util = require('util');
+const fs = require('fs');
+const readFile = util.promisify(fs.readFile);
+
 const Discord = require('discord.js');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
@@ -8,7 +12,44 @@ process.on('unhandledRejection', up => {
 
 init();
 
+async function loadConfig() {
+  if (process.argv.includes('--locally')) {
+    const configFile = await readFile('./config.json', { encoding: 'utf8' });
+    let config;
+    try {
+      config = JSON.parse(configFile);
+    } catch (error) {
+      console.error('Error: Could not parse ./config.json...');
+      throw error;
+    }
+
+    process.env.DISCORD_BOT_TOKEN = config.discordBotToken;
+    process.env.SPREADSHEET_ID = config.spreadsheetId;
+
+    process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS =
+      await readFile('./service-account.json', { encoding: 'utf8' });
+  }
+
+  if (!process.env.DISCORD_BOT_TOKEN) {
+    console.error('Error: The DISCORD_BOT_TOKEN environment variable has not');
+    console.error('been set. Aborting.');
+    process.exit(1);
+  }
+  if (!process.env.SPREADSHEET_ID) {
+    console.error('Error: The SPREADSHEET_ID environment variable has not');
+    console.error('been set. Aborting.');
+    process.exit(1);
+  }
+  if (!process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS) {
+    console.error('Error: The GOOGLE_SERVICE_ACCOUNT_CREDENTIALS environment');
+    console.error('variable has not been set. Aborting.');
+    process.exit(1);
+  }
+}
+
 async function init() {
+  await loadConfig();
+
   const discordClient = new Discord.Client();
   const googleClient = await connectToGoogleSheets();
 

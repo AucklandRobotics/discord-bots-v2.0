@@ -6,7 +6,9 @@
     "url": "https://github.com/AucklandRobotics/discord-volunteers-bot"
   },
   "scripts": {
-    "start": "node main.js"
+    "start": "node main.js",
+    "locally": "node main.js --locally",
+    "inspect": "node --inspect-brk main.js --locally"
   },
   "license": "MIT",
   "dependencies": {
