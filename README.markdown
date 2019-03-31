@@ -106,8 +106,9 @@ If you wish to add a new Discord Bot, then
 
 The bot will add data in the following format:
 
-| Name | Event | Date | Hours |
-|------|-------|------|-------|
+| Name                 | Event     | Date                     | Hours |
+|----------------------|-----------|--------------------------|-------|
+| ExampleMcExampleface | Scrimmage | 2019-03-31T08:44:35.020Z | 2.5   |
 
 Create a Google Sheet per usual, but for this bot to function, it needs
 to have the following Named Ranges (go to Data > Named ranges... in
@@ -124,8 +125,11 @@ your spreadsheet).
   from which you wish to start counting the total hours for the purpose
   of announcing milestones.
 
+See the spreadsheet for an example of the named ranges.
+
 The ID for your spreadsheet can be found in the URL as the long string of
-seemingly arbitrary letters, numbers and symbols.
+seemingly arbitrary letters, numbers and symbols. (Left as an exercise
+to the reader to figure out).
 
 ### Step 3. Creating a Google Service Account
 
@@ -151,7 +155,7 @@ and rename the file as `service-account.json`.
 
 Then create a new file called `config.json` file with the following contents:
 
-```toml
+```json
 {
   "spreadsheetId": "<Add your Google Sheet file id here>",
   "discordBotToken": "<Add your Discord bot token here>"
