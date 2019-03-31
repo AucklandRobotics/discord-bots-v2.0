@@ -126,7 +126,7 @@ async function logHours({ googleClient, name, description, hours }) {
     // ...append a row with the following data...
     resource: {
       values: [
-        [name, description, new Date().toLocaleString('en-NZ'), +hours],
+        [name, description, new Date().toISOString(), +hours],
       ],
     },
 
