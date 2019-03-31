@@ -173,10 +173,10 @@ Note: Don't commit these two files as they are your secrets.
 2. Create a new Heroku app.
 3. In the dashboard for your new app, go to the Settings tab, click 
    reveal config vars, and add the three following environment variables:
-   - `DISCORD_BOT_TOKEN`. This is the bot token you got in step 1.
-   - `SPREADSHEET_ID`. This is the ID you got in step 2.
+   - `DISCORD_BOT_TOKEN`. This is the discord bot token you got earlier.
+   - `SPREADSHEET_ID`. This is the ID you got earlier.
    - `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS`. This is the JSON file
-     you got in step 3.
+     contents you got earlier.
 4. Now go to the Deploy tab, and under Deployment Method choose GitHub.
 5. Enter your GitHub repository name below, and connect to it.
 6. Enable Automatic Deploys so that pushing to master branch on GitHub will
