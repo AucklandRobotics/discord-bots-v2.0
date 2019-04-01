@@ -17,14 +17,14 @@ separated, and `<number of hours>` needs to be a number without units.
 ## Reporting Problems
 
 Feel free to report an issue at
-https://github.com/ErnWong/aura-volunteers-bot/issues
+https://github.com/AucklandRobotics/discord-bots-v2.0/issues
 
 ## Contributing, Modifying the Code and Adding Features
 
 First, clone this repository to your machine.
 
 ```sh
-git clone https://github.com/ErnWong/aura-volunteers-bot.git
+git clone https://github.com/AucklandRobotics/discord-bots-v2.0.git
 ```
 
 Next, create a new branch (appropriately named, such as `fix-typo` or
