@@ -6,3 +6,4 @@ process.on('unhandledRejection', up => {
 
 
 startVolunteers();
+startPermissions();
