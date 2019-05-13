@@ -60,13 +60,32 @@ module.exports = async function startVolunteers() {
         if (tokens.length !== 4) {
           message.reply('Sorry, I didn\'t understand you. Please try again?\n' +
             'Here\'s the format I understand:\n' +
-            '```\n!verify <your-name> <description> <hours>\n```');
+            '```\n!verify <first-name> <last-name> <id-number>\n```');
           break;
         }
-
+        
         const firstName = tokens[1];
         const lastName = tokens[2];
         const idNumber = tokens[3];
+        try {
+          const isFullMember = await getMembership(googleClient, idNumber);
+          if (!isFullMember) {
+            message.reply(getRandomFail()+" You haven't paid your fees! Yell at Reeve if you have paid.");
+            break;
+          }
+          
+          const user = message.member;
+          user.setNickname(firstName + " " +lastName);
+          user.addRole(message.guild.roles.find('name', 'Full Member'));
+          message.reply(getRandomSuccess());
+        }
+        catch (error) {
+          if(error.message == 'NOT REGISTERED'){
+            message.reply(getRandomFail()+" Register at aura.org.nz/signup first. Yell at Hideaki if you have already.");
+          }
+          console.error("Error updating roles: ", error);
+          message.reply(getRandomFail()+" Something went wrong, Yell at Hideaki.");
+        }
         break;
     }
 
@@ -88,3 +107,50 @@ async function connectToGoogleSheets() {
 
   return googleClient;
 }
+
+async function getValues(googleClient,rangeName){
+  return  sheets.spreadsheets.values.get({
+    auth: googleClient,
+    range: rangeName,
+    spreadsheetId: process.env.PERMISSIONS_SPREADSHEET_ID,
+  });
+}
+
+async function getMembership(googleClient, idNumber) {
+  const idList = (await getValues(googleClient,'id')).data.values;
+  const index = idList.findIndex(function (element) { return parseInt(element) == this; }, idNumber);
+  const paidResult = (await getValues(googleClient,'paid')).data.values[index];
+  if(index == -1){
+    throw 'NOT REGISTERED';
+  }
+  var today = new Date();
+  var sem2Start = new Date(today.getFullYear(), 6); //Start requiring Sem 2 payments from July.
+  if (sem2Start - today > 0) {
+    return paidResult[0] == 'Yes'
+  }
+  else {
+    return paidResult[1] == 'Yes'
+  }
+}
+
+const SUCCESS = [
+  'Welcome to the party pal!',
+  'Yippie-Ki-Yay, Motherf***r!',
+  'Happy trails, Hans.',
+  'Now I Have A Machine Gun. Ho Ho Ho',
+];
+
+function getRandomSuccess() {
+  const index = Math.floor(Math.random() * SUCCESS.length);
+  return SUCCESS[index];
+}
+const FAIL = [
+  'Sorry, Hans. Wrong guess.',
+  "Uh-oh spaghyeeti-O's! " //This isn't a Die-Hard reference.
+];
+
+function getRandomFail() {
+  const index = Math.floor(Math.random() * FAIL.length);
+  return FAIL[index];
+}
+
