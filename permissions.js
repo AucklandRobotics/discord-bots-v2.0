@@ -75,8 +75,8 @@ module.exports = async function startVolunteers() {
           }
           
           const user = message.member;
-          user.setNickname(firstName + " " +lastName);
-          user.addRole(message.guild.roles.find('name', 'Full Member'));
+          await user.setNickname(firstName + " " +lastName);
+          await user.addRole(message.guild.roles.find('name', 'Full Member'));
           message.reply(getRandomSuccess());
         }
         catch (error) {
