@@ -83,8 +83,10 @@ module.exports = async function startVolunteers() {
           if(error instanceof Error && error.message == 'NOT REGISTERED'){
             message.reply(getRandomFail()+" Register at aura.org.nz/signup first. Yell at Hideaki if you have already.");
           }
-          console.error("Error updating roles: ", error);
-          message.reply(getRandomFail()+" Something went wrong, Yell at Hideaki.");
+          else{
+            console.error("Error updating roles: ", error);
+            message.reply(getRandomFail()+" Something went wrong, Yell at Hideaki.");
+          }
         }
         break;
     }
