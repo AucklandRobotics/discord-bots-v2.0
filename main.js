@@ -63,6 +63,10 @@ async function init() {
 
     switch (tokens[0].toLowerCase()) {
       case '!loghours':
+        if (tokens.length === 3) {
+            tokens.splice(1, 0, message.author.tag); // 'name' is the Discord 'tag' (e.g. hydrabolt#0001)
+        }
+      
         if (tokens.length !== 4) {
           message.reply('Sorry, I didn\'t understand you. Please try again?\n' +
             'Here\'s the format I understand:\n' +
