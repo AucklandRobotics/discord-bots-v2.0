@@ -80,7 +80,7 @@ module.exports = async function startVolunteers() {
           message.reply(getRandomSuccess());
         }
         catch (error) {
-          if(error.message == 'NOT REGISTERED'){
+          if(error instanceof Error && error.message == 'NOT REGISTERED'){
             message.reply(getRandomFail()+" Register at aura.org.nz/signup first. Yell at Hideaki if you have already.");
           }
           console.error("Error updating roles: ", error);
@@ -121,7 +121,7 @@ async function getMembership(googleClient, idNumber) {
   const index = idList.findIndex(function (element) { return parseInt(element) == this; }, idNumber);
   const paidResult = (await getValues(googleClient,'paid')).data.values[index];
   if(index == -1){
-    throw 'NOT REGISTERED';
+    throw new Error('NOT REGISTERED');
   }
   var today = new Date();
   var sem2Start = new Date(today.getFullYear(), 6); //Start requiring Sem 2 payments from July.
