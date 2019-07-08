@@ -61,8 +61,8 @@ async function init() {
 
     const tokens = message.content.trim().split(/\s+/g);
 
-    switch (tokens[0]) {
-      case '!logHours':
+    switch (tokens[0].toLowerCase()) {
+      case '!loghours':
         if (tokens.length !== 4) {
           message.reply('Sorry, I didn\'t understand you. Please try again?\n' +
             'Here\'s the format I understand:\n' +
