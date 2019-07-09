@@ -101,6 +101,22 @@ async function init() {
           message.reply('Could not log hours :( yell at ernest');
         }
         break;
+
+    case '!gethours': {
+      if (tokens.length === 1) {
+          tokens.splice(1, 0, message.author.tag); // 'name' is the Discord 'tag' (e.g. hydrabolt#0001)
+      }
+      
+      if (tokens.length !== 2) {
+          message.reply('Sorry, I didn\'t understand you. Please try again?\n' +
+          'Here\'s the format I understand:\n' +
+          '```\n!getHours [your-name]\n```');
+          break;
+      }
+      
+      const name = tokens[1];
+      const totalHours = getTotalHours(googleClient, name);
+    }
     }
 
   });
@@ -202,4 +218,24 @@ async function getCurrentMilestone(googleClient) {
   ));
 
   return bestMilestone;
+}
+
+async function getTotalHours(googleClient, user) {
+  user = user || "ALL";
+  
+  const pivotTables = await sheets.spreadsheets.get({
+    auth: googleClient,
+    fields: "sheets(properties.sheetId, data.rowData.values.pivotTable)",
+    spreadsheetId: process.env.SPREADSHEET_ID,
+  });
+  console.log(JSON.stringify(pivotTables));
+
+  const hiscoresTable = await sheets.spreadsheets.values.get({
+    auth: googleClient,
+    range: 'date_hours_table',
+    spreadsheetId: process.env.SPREADSHEET_ID,
+
+    // Format numbers such that they can be parsed into numbers.
+    valueRenderOption: 'UNFORMATTED_VALUE',
+  });
 }

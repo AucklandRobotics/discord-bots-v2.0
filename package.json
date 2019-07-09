@@ -12,7 +12,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^11.4.2",
-    "googleapis": "^38.0.0"
+    "bufferutil": "^3.0.3",
+    "discord.js": "^11.5.1",
+    "googleapis": "^38.0.0",
+    "locally": "^0.2.1"
   }
 }
