@@ -107,7 +107,7 @@ async function init() {
         const name = tokens[1] || message.author.tag;
         const totalHours = await getTotalHours(googleClient);
         const aliases = await getAliases(googleClient);
-        const hours = totalHours[aliases[name]];
+        const hours = totalHours[aliases[name] || name];
         message.reply(`You\'ve volunteered for ${+hours.toFixed(1)} hours!`);
         break;
       }
