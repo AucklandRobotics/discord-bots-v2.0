@@ -2,6 +2,7 @@ const util = require('util');
 const fs = require('fs');
 const readFile = util.promisify(fs.readFile);
 
+const AsciiTable = require('ascii-table')
 const Discord = require('discord.js');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
@@ -101,6 +102,15 @@ async function init() {
           message.reply('Could not log hours :( yell at ernest');
         }
         break;
+
+      case 'hiscores':
+      case 'highscores':
+      case 'leaderboards':
+        const hiscores = await getHiscores(googleClient);
+        const table = new AsciiTable('Hiscores').setHeading(["", "Hours", "Name"]);
+        hiscores.forEach((row, index) => table.addRow(index + 1, row[1], row[0]));
+        message.reply(table.toString());
+        break;
     }
 
   });
@@ -146,6 +156,37 @@ async function logHours({ googleClient, name, description, hours }) {
     // ...without overwriting existing data...
     insertDataOption: 'INSERT_ROWS',
   });
+}
+
+async function getNormalisedHoursTable(googleClient) {
+  // returns the table WITHOUT a header row
+  return (await sheets.spreadsheets.values.get({
+    auth: googleClient,
+    range: "normalised_name_event_date_hours_table",
+    spreadsheetId: process.env.SPREADSHEET_ID,
+  })).data.values.slice(1);
+}
+
+async function getHiscores(googleClient, maxPeople) {
+  maxPeople = maxPeople || 10;
+
+  // fetch normalised hours table
+  const result = await getNormalisedHoursTable(googleClient);
+
+  // get a list of the people who've volunteered
+  const peopleSet = new Set(result.map(row => row[0]));
+
+  // sum hours for each person
+  people = {};
+  peopleSet.forEach(name => people[name] = 0);
+  result.forEach(row => people[row[0]] += +row[3]);
+
+  // sort people by hours
+  const sortable = [];
+  Object.keys(people).forEach(name => sortable.push([name, people[name]]));
+  sortable.sort((a, b) => b[1] - a[1]);
+
+  return sortable.slice(0, maxPeople);
 }
 
 const APPRECIATIONS = [
