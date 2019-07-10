@@ -103,6 +103,37 @@ async function init() {
         }
         break;
 
+      case '!addalias': {
+        if (tokens.length === 2) {
+            tokens.splice(1, 0, message.author.tag); // 'name' is the Discord 'tag' (e.g. hydrabolt#0001)
+        }
+      
+        if (tokens.length !== 3) {
+          message.reply('Sorry, I didn\'t understand you. Please try again?\n' +
+            'Here\'s the format I understand:\n' +
+            '```\n!addalias [your-name] <newAlias>\n```');
+          break;
+        }
+
+        const aliases = await getAliases(googleClient);
+        const name = aliases[tokens[1]] || tokens[1];
+        const newAlias = tokens[2];
+
+        // check if new alias is available
+        if (aliases[newAlias]) {
+          message.reply(`Sorry, ${aliases[newAlias]} already has that alias!`);
+          break;
+        }
+        if (Object.values(aliases).includes(newAlias)) {
+          message.reply(`Sorry, that's already someone's name!`);
+          break;
+        }
+
+        addAlias(googleClient, name, newAlias);
+        message.reply(`${getRandomAppreciation()}, now you can use \`${newAlias}\` instead of your name`);
+        break;
+      }
+
       case '!hiscores':
       case '!highscores':
       case '!leaderboards':
@@ -165,6 +196,38 @@ async function logHours({ googleClient, name, description, hours }) {
     // ...without overwriting existing data...
     insertDataOption: 'INSERT_ROWS',
   });
+}
+
+async function addAlias(googleClient, name, newAlias) {
+  await sheets.spreadsheets.values.append({
+    auth: googleClient,
+    range: 'aliases_table_next',
+    spreadsheetId: process.env.SPREADSHEET_ID,
+    resource: {
+      values: [
+        [newAlias, name],
+      ],
+    },
+    valueInputOption: 'RAW',
+    insertDataOption: 'INSERT_ROWS',
+  });
+}
+
+async function getAliasesTable(googleClient) {
+  // returns the table WITHOUT a header row
+  return (await sheets.spreadsheets.values.get({
+    auth: googleClient,
+    range: "alias_name_table",
+    spreadsheetId: process.env.SPREADSHEET_ID,
+  })).data.values.slice(1);
+}
+
+async function getAliases(googleClient) {
+  // returns an object of { alias1: name, alias2: name }
+  const aliases = {};
+  const aliasesTable = await getAliasesTable(googleClient);
+  aliasesTable.forEach(row => aliases[row[0]] = row[1]);
+  return aliases;
 }
 
 async function getNormalisedHoursTable(googleClient) {
