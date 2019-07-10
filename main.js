@@ -113,7 +113,7 @@ async function init() {
         const hiscores = [];
         Object.keys(totalHours).forEach(name => hiscores.push([name, totalHours[name]]));
         hiscores.sort((a, b) => b[1] - a[1]);
-        hiscores.splice(maxHiscoresLength);
+        hiscores.splice(MAX_HISCORES_LENGTH);
 
         // generate and display ASCII table
         const table = new AsciiTable('Hours Volunteered').setAlign(1, AsciiTable.LEFT);
