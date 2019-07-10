@@ -2,7 +2,7 @@ const util = require('util');
 const fs = require('fs');
 const readFile = util.promisify(fs.readFile);
 
-const AsciiTable = require('ascii-table')
+const AsciiTable = require('ascii-table');
 const Discord = require('discord.js');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
