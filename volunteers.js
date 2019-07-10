@@ -2,6 +2,7 @@ const util = require('util');
 const fs = require('fs');
 const readFile = util.promisify(fs.readFile);
 
+const AsciiTable = require('ascii-table');
 const Discord = require('discord.js');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
@@ -55,8 +56,12 @@ module.exports = async function startVolunteers() {
 
     const tokens = message.content.trim().split(/\s+/g);
 
-    switch (tokens[0]) {
-      case '!logHours':
+    switch (tokens[0].toLowerCase()) {
+      case '!loghours':
+        if (tokens.length === 3) {
+            tokens.splice(1, 0, message.author.tag); // 'name' is the Discord 'tag' (e.g. hydrabolt#0001)
+        }
+
         if (tokens.length !== 4) {
           message.reply('Sorry, I didn\'t understand you. Please try again?\n' +
             'Here\'s the format I understand:\n' +
@@ -90,6 +95,24 @@ module.exports = async function startVolunteers() {
           console.error('Error occured while logging hours:', error);
           message.reply('Could not log hours :( yell at ernest');
         }
+        break;
+
+      case '!hiscores':
+      case '!highscores':
+      case '!leaderboards':
+        const totalHours = await getTotalHours(googleClient);
+        const MAX_HISCORES_LENGTH = 10;
+
+        // sort people by hours, cut list length to maxHiscoresLength
+        const hiscores = [];
+        Object.keys(totalHours).forEach(name => hiscores.push([name, totalHours[name]]));
+        hiscores.sort((a, b) => b[1] - a[1]);
+        hiscores.splice(MAX_HISCORES_LENGTH);
+
+        // generate and display ASCII table
+        const table = new AsciiTable('Hours Volunteered').setAlign(1, AsciiTable.LEFT);
+        hiscores.forEach((row, index) => table.addRow(`#${index + 1}`, `${Math.round(row[1])}h`, row[0]));
+        message.reply('\n```\n' + table.toString() + '\n```');
         break;
     }
 
@@ -136,6 +159,27 @@ async function logHours({ googleClient, name, description, hours }) {
     // ...without overwriting existing data...
     insertDataOption: 'INSERT_ROWS',
   });
+}
+
+async function getNormalisedHoursTable(googleClient) {
+  // returns the table WITHOUT a header row
+  return (await sheets.spreadsheets.values.get({
+    auth: googleClient,
+    range: "normalised_name_event_date_hours_table",
+    spreadsheetId: process.env.VOLUNTEERS_SPREADSHEET_ID,
+  })).data.values.slice(1);
+}
+
+async function getTotalHours(googleClient) {
+  // fetch normalised hours table
+  const result = await getNormalisedHoursTable(googleClient);
+
+  // sum hours for each person
+  people = {};
+  result.forEach(row => people[row[0]] = 0);
+  result.forEach(row => people[row[0]] += +row[3]);
+
+  return people;
 }
 
 const APPRECIATIONS = [
