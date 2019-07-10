@@ -54,8 +54,12 @@ async function init() {
   const discordClient = new Discord.Client();
   const googleClient = await connectToGoogleSheets();
 
-  discordClient.on('ready', () => {
+  discordClient.on('ready', async () => {
     console.log(`Logged in as ${discordClient.user.tag}!`);
+    const hiscores = await getHiscores(googleClient);
+    const table = new AsciiTable('Hours Volunteered').setAlign(1, AsciiTable.LEFT);
+    hiscores.forEach((row, index) => table.addRow(`#${index + 1}`, `${Math.round(row[1])}h`, row[0]));
+    console.log('\n```\n' + table.toString() + '\n```');
   });
 
   discordClient.on('message', async message => {
@@ -108,8 +112,8 @@ async function init() {
       case '!leaderboards':
         const hiscores = await getHiscores(googleClient);
         const table = new AsciiTable('Hours Volunteered').setAlign(1, AsciiTable.LEFT);
-        hiscores.forEach((row, index) => table.addRow(`#${index + 1}`, row[1], row[0]));
-        message.reply('```' + table.toString() + '```');
+        hiscores.forEach((row, index) => table.addRow(`#${index + 1}`, `${Math.round(row[1])}h`, row[0]));
+        message.reply('\n```\n' + table.toString() + '\n```');
         break;
     }
 
