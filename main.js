@@ -103,6 +103,15 @@ async function init() {
         }
         break;
 
+      case '!gethours': {
+        const name = tokens[1] || message.author.tag;
+        const totalHours = await getTotalHours(googleClient);
+        const aliases = await getAliases(googleClient);
+        const hours = totalHours[aliases[name]];
+        message.reply(`You\'ve volunteered for ${+hours.toFixed(1)} hours!`);
+        break;
+      }
+
       case '!hiscores':
       case '!highscores':
       case '!leaderboards':
@@ -165,6 +174,23 @@ async function logHours({ googleClient, name, description, hours }) {
     // ...without overwriting existing data...
     insertDataOption: 'INSERT_ROWS',
   });
+}
+
+async function getAliasesTable(googleClient) {
+  // returns the table WITHOUT a header row
+  return (await sheets.spreadsheets.values.get({
+    auth: googleClient,
+    range: "alias_name_table",
+    spreadsheetId: process.env.SPREADSHEET_ID,
+  })).data.values.slice(1);
+}
+
+async function getAliases(googleClient) {
+  // returns an object of { alias1: name, alias2: name }
+  const aliases = {};
+  const aliasesTable = await getAliasesTable(googleClient);
+  aliasesTable.forEach(row => aliases[row[0]] = row[1]);
+  return aliases;
 }
 
 async function getNormalisedHoursTable(googleClient) {
