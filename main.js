@@ -115,9 +115,10 @@ async function init() {
           break;
         }
 
-        const aliases = await getAliases(googleClient);
-        const name = aliases[tokens[1]] || tokens[1];
+        const nameOrAlias = tokens[1];
         const newAlias = tokens[2];
+        const aliases = await getAliases(googleClient);
+        const name = getAlias(aliases, nameOrAlias);
 
         // check if new alias is available
         if (aliases[newAlias]) {
@@ -228,6 +229,10 @@ async function getAliases(googleClient) {
   const aliasesTable = await getAliasesTable(googleClient);
   aliasesTable.forEach(row => aliases[row[0]] = row[1]);
   return aliases;
+}
+
+function getAlias(aliases, name) {
+  return aliases[name] || name;
 }
 
 async function getNormalisedHoursTable(googleClient) {
