@@ -103,13 +103,13 @@ async function init() {
         }
         break;
 
-      case 'hiscores':
-      case 'highscores':
-      case 'leaderboards':
+      case '!hiscores':
+      case '!highscores':
+      case '!leaderboards':
         const hiscores = await getHiscores(googleClient);
         const table = new AsciiTable('Hiscores').setHeading(["", "Hours", "Name"]);
         hiscores.forEach((row, index) => table.addRow(index + 1, row[1], row[0]));
-        message.reply(table.toString());
+        message.reply('```' + table.toString() + '```');
         break;
     }
 
