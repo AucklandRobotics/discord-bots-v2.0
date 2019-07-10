@@ -107,7 +107,7 @@ async function init() {
       case '!highscores':
       case '!leaderboards':
         const totalHours = await getTotalHours(googleClient);
-        const maxHiscoresLength = 10;
+        const MAX_HISCORES_LENGTH = 10;
 
         // sort people by hours, cut list length to maxHiscoresLength
         const hiscores = [];
