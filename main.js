@@ -180,12 +180,9 @@ async function getTotalHours(googleClient) {
   // fetch normalised hours table
   const result = await getNormalisedHoursTable(googleClient);
 
-  // get a list of the people who've volunteered
-  const peopleSet = new Set(result.map(row => row[0]));
-
   // sum hours for each person
   people = {};
-  peopleSet.forEach(name => people[name] = 0);
+  result.forEach(row => people[row[0]] = 0);
   result.forEach(row => people[row[0]] += +row[3]);
 
   return people;
