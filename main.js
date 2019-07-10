@@ -107,8 +107,8 @@ async function init() {
       case '!highscores':
       case '!leaderboards':
         const hiscores = await getHiscores(googleClient);
-        const table = new AsciiTable('Hiscores').setHeading(["", "Hours", "Name"]);
-        hiscores.forEach((row, index) => table.addRow(index + 1, row[1], row[0]));
+        const table = new AsciiTable('Hours Volunteered').setAlign(1, AsciiTable.LEFT);
+        hiscores.forEach((row, index) => table.addRow(`#${index + 1}`, row[1], row[0]));
         message.reply('```' + table.toString() + '```');
         break;
     }
