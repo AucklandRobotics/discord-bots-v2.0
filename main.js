@@ -106,7 +106,16 @@ async function init() {
       case '!hiscores':
       case '!highscores':
       case '!leaderboards':
-        const hiscores = await getHiscores(googleClient);
+        const totalHours = await getTotalHours(googleClient);
+        const maxHiscoresLength = 10;
+
+        // sort people by hours, cut list length to maxHiscoresLength
+        const hiscores = [];
+        Object.keys(totalHours).forEach(name => hiscores.push([name, totalHours[name]]));
+        hiscores.sort((a, b) => b[1] - a[1]);
+        hiscores.splice(maxHiscoresLength);
+
+        // generate and display ASCII table
         const table = new AsciiTable('Hours Volunteered').setAlign(1, AsciiTable.LEFT);
         hiscores.forEach((row, index) => table.addRow(`#${index + 1}`, `${Math.round(row[1])}h`, row[0]));
         message.reply('\n```\n' + table.toString() + '\n```');
@@ -167,9 +176,7 @@ async function getNormalisedHoursTable(googleClient) {
   })).data.values.slice(1);
 }
 
-async function getHiscores(googleClient, maxPeople) {
-  maxPeople = maxPeople || 10;
-
+async function getTotalHours(googleClient) {
   // fetch normalised hours table
   const result = await getNormalisedHoursTable(googleClient);
 
@@ -181,12 +188,7 @@ async function getHiscores(googleClient, maxPeople) {
   peopleSet.forEach(name => people[name] = 0);
   result.forEach(row => people[row[0]] += +row[3]);
 
-  // sort people by hours
-  const sortable = [];
-  Object.keys(people).forEach(name => sortable.push([name, people[name]]));
-  sortable.sort((a, b) => b[1] - a[1]);
-
-  return sortable.slice(0, maxPeople);
+  return people;
 }
 
 const APPRECIATIONS = [
