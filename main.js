@@ -54,12 +54,8 @@ async function init() {
   const discordClient = new Discord.Client();
   const googleClient = await connectToGoogleSheets();
 
-  discordClient.on('ready', async () => {
+  discordClient.on('ready', () => {
     console.log(`Logged in as ${discordClient.user.tag}!`);
-    const hiscores = await getHiscores(googleClient);
-    const table = new AsciiTable('Hours Volunteered').setAlign(1, AsciiTable.LEFT);
-    hiscores.forEach((row, index) => table.addRow(`#${index + 1}`, `${Math.round(row[1])}h`, row[0]));
-    console.log('\n```\n' + table.toString() + '\n```');
   });
 
   discordClient.on('message', async message => {
