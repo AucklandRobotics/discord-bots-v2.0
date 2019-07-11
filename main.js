@@ -119,6 +119,9 @@ async function init() {
         const newAlias = tokens[2];
         const aliases = await getAliases(googleClient);
         const name = getAlias(aliases, nameOrAlias);
+        const queryAboutSelf = name === getAlias(aliases, message.author.tag);
+        const nameToPrint = queryAboutSelf ? 'you' : name;
+        const nameToPrintPossessive = queryAboutSelf ? 'your' : 'their';
 
         // check if new alias is available
         if (aliases[newAlias]) {
@@ -131,7 +134,8 @@ async function init() {
         }
 
         addAlias(googleClient, name, newAlias);
-        message.reply(`${getRandomAppreciation()}, now you can use \`${newAlias}\` instead of your name`);
+        message.reply(`${getRandomAppreciation()}, now ${nameToPrint} can use ` +
+          `\`${newAlias}\` instead of ${nameToPrintPossessive} name`);
         break;
       }
 
