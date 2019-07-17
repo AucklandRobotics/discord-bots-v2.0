@@ -157,8 +157,14 @@ Then create a new file called `config.json` file with the following contents:
 
 ```json
 {
-  "spreadsheetId": "<Add your Google Sheet file id here>",
-  "discordBotToken": "<Add your Discord bot token here>"
+  "volunteersBot": {
+    "spreadsheetId": "<Add your Google Sheet file id here>",
+    "discordBotToken": "<Add your Discord bot token here>"
+  },
+  "permissionsBot": {
+    "spreadsheetId": "<Add your Google Sheet file id here>",
+    "discordBotToken": "<Add your Discord bot token here>"
+  },
 }
 ```
 
@@ -172,9 +178,11 @@ Note: Don't commit these two files as they are your secrets.
 1. Create a Heroku account.
 2. Create a new Heroku app.
 3. In the dashboard for your new app, go to the Settings tab, click 
-   reveal config vars, and add the three following environment variables:
-   - `DISCORD_BOT_TOKEN`. This is the discord bot token you got earlier.
-   - `SPREADSHEET_ID`. This is the ID you got earlier.
+   reveal config vars, and add the following environment variables:
+   - `VOLUNTEERS_DISCORD_BOT_TOKEN`. This is the discord bot token you got earlier.
+   - `VOLUNTEERS_SPREADSHEET_ID`. This is the ID you got earlier.
+   - `PERMISSIONS_DISCORD_BOT_TOKEN`. Todo.
+   - `PERMISSIONS_SPREADSHEET_ID`. Todo.
    - `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS`. This is the JSON file
      contents you got earlier.
 4. Now go to the Deploy tab, and under Deployment Method choose GitHub.
