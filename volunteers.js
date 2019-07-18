@@ -79,6 +79,12 @@ module.exports = async function startVolunteers() {
           break;
         }
 
+        if (hours < -24 || hours > 24) {
+          message.reply('I can only add or remove a maximum of 24 hours! ' +
+            'Please try again?\n');
+          break;
+        } 
+        
         try {
           const prevMilestone = await getCurrentMilestone(googleClient);
           await logHours({ googleClient, name, description, hours });
