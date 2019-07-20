@@ -79,13 +79,13 @@ module.exports = async function startVolunteers() {
           break;
         }
 
-        if (Math.abs(hours)> 24) {
+        if (Math.abs(hours) > 24) {
           message.reply('I can only add or remove a maximum of 24 hours! ' +
             'Please try again?\n');
           break;
         } 
         
-        if (hours === 0) {
+        if (hours == 0) {
           message.reply('Looks like you didn\'t contribute any volunteering time. ' +
             'Please try again once you have!\n');
           break;
