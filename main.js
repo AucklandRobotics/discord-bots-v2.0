@@ -110,6 +110,14 @@ async function init() {
         const name = getAlias(aliases, nameOrAlias);
         const hours = totalHours[name];
         const queryAboutSelf = name === getAlias(aliases, message.author.tag);
+		
+		// person hasn't volunteered
+		if (hours === undefined) {
+			const targetMember = queryAboutSelf ? `You haven't` : `${name} hasn't`;
+			message.reply(`${targetMember} volunteered yet :(`);
+			break;
+		}
+		
         const nameToPrint = queryAboutSelf ? `You've` : `${name}'s`;
         message.reply(`${nameToPrint} volunteered for ${+hours.toFixed(1)} hours!`);
         break;
@@ -192,12 +200,12 @@ async function getAliases(googleClient) {
   // returns an object of { alias1: name, alias2: name }
   const aliases = {};
   const aliasesTable = await getAliasesTable(googleClient);
-  aliasesTable.forEach(row => aliases[row[0]] = row[1]);
+  aliasesTable.forEach(row => aliases[row[0].toLowerCase()] = row[1]);
   return aliases;
 }
 
 function getAlias(aliases, name) {
-  return aliases[name] || name;
+  return aliases[name.toLowerCase()] || name;
 }
 
 async function getNormalisedHoursTable(googleClient) {
