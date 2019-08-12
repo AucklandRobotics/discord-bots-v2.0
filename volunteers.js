@@ -49,14 +49,15 @@ module.exports = async function startVolunteers() {
   const googleClient = await connectToGoogleSheets();
 
   discordClient.on('ready', () => {
-    console.log(`Logged in as ${discordClient.user.tag}!`);
+    console.log(`Volunteers.js logged in as ${discordClient.user.tag}!`);
   });
 
   discordClient.on('message', async message => {
 
     const tokens = message.content.trim().split(/\s+/g);
+    const command = tokens[0].toLowerCase();
 
-    switch (tokens[0].toLowerCase()) {
+    switch (command) {
       case '!loghours':
         if (tokens.length === 3) {
             tokens.splice(1, 0, message.author.tag); // 'name' is the Discord 'tag' (e.g. hydrabolt#0001)
@@ -109,6 +110,26 @@ module.exports = async function startVolunteers() {
         }
         break;
 
+      /* !getHours [member] */
+      case '!gethours': {
+        const totalHours = await getTotalHours(googleClient);
+        const aliasesLookup = await getAliasesLookup(googleClient);
+        const name = getMemberFromAlias(aliasesLookup, tokens[1] || message.author.tag);
+        const hours = totalHours[name];
+        const queryAboutSelf = name === getMemberFromAlias(aliasesLookup, message.author.tag);
+
+        // member hasn't volunteered
+        if (hours === undefined) {
+          const nameToPrint = queryAboutSelf ? `You haven't` : `${name} hasn't`;
+          message.reply(`${nameToPrint} volunteered yet :cry:`);
+          break;
+        }
+        // display number of hours volunteered
+        const nameToPrint = queryAboutSelf ? `You've` : `${name}'s`;
+        message.reply(`${nameToPrint} volunteered for ${+hours.toFixed(1)} hours!`);
+        break;
+      }
+
       case '!hiscores':
       case '!highscores':
       case '!leaderboards':
@@ -131,7 +152,7 @@ module.exports = async function startVolunteers() {
   });
 
   discordClient.login(process.env.VOLUNTEERS_DISCORD_BOT_TOKEN);
-}
+};
 
 async function connectToGoogleSheets() {
   const credentials =
@@ -192,6 +213,32 @@ async function getTotalHours(googleClient) {
   result.forEach(row => people[row[0]] += +row[3]);
 
   return people;
+}
+
+async function getAliasesTable(googleClient) {
+  // returns the table WITHOUT a header row
+  return (await sheets.spreadsheets.values.get({
+    auth: googleClient,
+    range: "alias_name_table",
+    spreadsheetId: process.env.VOLUNTEERS_SPREADSHEET_ID,
+  })).data.values.slice(1);
+}
+
+async function getAliasesLookup(googleClient) {
+  // returns an object of { alias1: name, alias2: name }
+  const aliasesLookup = {};
+  const aliasesTable = await getAliasesTable(googleClient);
+  
+  aliasesTable.forEach(([alias, name]) => {
+    // case insensitive lookup
+    aliasesLookup[alias.toLowerCase()] = name;
+  });
+  return aliasesLookup;
+}
+
+function getMemberFromAlias(aliasesLookup, alias) {
+  // case insensitive lookup
+  return aliasesLookup[alias.toLowerCase()] || alias;
 }
 
 const APPRECIATIONS = [
