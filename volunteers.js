@@ -71,25 +71,25 @@ module.exports = async function startVolunteers() {
 
         const name = tokens[1];
         const description = tokens[2];
-        const hours = tokens[3];
 
-        if (isNaN(hours)) {
+        if (isNaN(tokens[3])) {
           message.reply('I couldn\'t figure out how many hours you did. ' +
             'Please try again?\n');
           break;
         }
+        const hours = parseFloat(tokens[3]);
 
-        if (Math.abs(hours)> 24) {
+        if (Math.abs(hours) > 24) {
           message.reply('I can only add or remove a maximum of 24 hours! ' +
             'Please try again?\n');
           break;
-        } 
+        }
         
         if (hours === 0) {
           message.reply('Looks like you didn\'t contribute any volunteering time. ' +
             'Please try again once you have!\n');
           break;
-        }  
+        }
         
         try {
           const prevMilestone = await getCurrentMilestone(googleClient);
