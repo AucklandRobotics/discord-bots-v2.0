@@ -109,6 +109,42 @@ module.exports = async function startVolunteers() {
         }
         break;
 
+      case '!addalias': {
+        if (tokens.length === 2) {
+            tokens.splice(1, 0, message.author.tag); // 'name' is the Discord 'tag' (e.g. hydrabolt#0001)
+        }
+
+        if (tokens.length !== 3) {
+          message.reply('Sorry, I didn\'t understand you. Please try again?\n' +
+            'Here\'s the format I understand:\n' +
+            '```\n!addalias [your-name] <newAlias>\n```');
+          break;
+        }
+
+        const nameOrAlias = tokens[1];
+        const newAlias = tokens[2];
+        const aliasesLookup = await getAliasesLookup(googleClient);
+
+        // check if new alias is available
+        if (aliasesLookup[newAlias] !== undefined) {
+          message.reply(`Sorry, ${aliases[newAlias]} already has that alias!`);
+          break;
+        }
+        if (Object.values(aliasesLookup).includes(newAlias)) {
+          message.reply(`Sorry, that's already someone's name!`);
+          break;
+        }
+        const name = getMemberFromAlias(aliasesLookup, nameOrAlias);
+        const queryAboutSelf = name === getMemberFromAlias(aliasesLookup, message.author.tag);
+        const nameToPrint = queryAboutSelf ? 'you' : name;
+        const nameToPrintPossessive = queryAboutSelf ? 'your' : 'their';
+
+        addAlias(googleClient, name, newAlias);
+        message.reply(`${getRandomAppreciation()}, now ${nameToPrint} can use ` +
+          `\`${newAlias}\` instead of ${nameToPrintPossessive} name`);
+        break;
+      }
+
       case '!hiscores':
       case '!highscores':
       case '!leaderboards':
@@ -192,6 +228,47 @@ async function getTotalHours(googleClient) {
   result.forEach(row => people[row[0]] += +row[3]);
 
   return people;
+}
+
+async function addAlias(googleClient, name, newAlias) {
+  await sheets.spreadsheets.values.append({
+    auth: googleClient,
+    range: 'aliases_table_next',
+    spreadsheetId: process.env.VOLUNTEERS_SPREADSHEET_ID,
+    resource: {
+      values: [
+        [newAlias, name],
+      ],
+    },
+    valueInputOption: 'RAW',
+    insertDataOption: 'INSERT_ROWS',
+  });
+}
+
+async function getAliasesTable(googleClient) {
+  // returns the table WITHOUT a header row
+  return (await sheets.spreadsheets.values.get({
+    auth: googleClient,
+    range: "alias_name_table",
+    spreadsheetId: process.env.VOLUNTEERS_SPREADSHEET_ID,
+  })).data.values.slice(1);
+}
+
+async function getAliasesLookup(googleClient) {
+  // returns an object of { alias1: name, alias2: name }
+  const aliasesLookup = {};
+  const aliasesTable = await getAliasesTable(googleClient);
+  
+  aliasesTable.forEach(([alias, name]) => {
+    // case insensitive lookup
+    aliasesLookup[alias.toLowerCase()] = name;
+  });
+  return aliasesLookup;
+}
+
+function getMemberFromAlias(aliasesLookup, alias) {
+  // case insensitive lookup
+  return aliasesLookup[alias.toLowerCase()] || alias;
 }
 
 const APPRECIATIONS = [
