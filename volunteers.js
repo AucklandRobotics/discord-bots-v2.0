@@ -72,25 +72,25 @@ module.exports = async function startVolunteers() {
 
         const name = tokens[1];
         const description = tokens[2];
-        const hours = tokens[3];
 
-        if (isNaN(hours)) {
+        if (isNaN(tokens[3])) {
           message.reply('I couldn\'t figure out how many hours you did. ' +
             'Please try again?\n');
           break;
         }
+        const hours = parseFloat(tokens[3]);
 
-        if (Math.abs(hours)> 24) {
+        if (Math.abs(hours) > 24) {
           message.reply('I can only add or remove a maximum of 24 hours! ' +
             'Please try again?\n');
           break;
-        } 
+        }
         
         if (hours === 0) {
           message.reply('Looks like you didn\'t contribute any volunteering time. ' +
             'Please try again once you have!\n');
           break;
-        }  
+        }
         
         try {
           const prevMilestone = await getCurrentMilestone(googleClient);
@@ -127,6 +127,41 @@ module.exports = async function startVolunteers() {
         // display number of hours volunteered
         const nameToPrint = queryAboutSelf ? `You've` : `${name}'s`;
         message.reply(`${nameToPrint} volunteered for ${+hours.toFixed(1)} hours!`);
+        
+      /* !getHours [member] <newAlias> */
+      case '!addalias': {
+        if (tokens.length === 2) {
+            tokens.splice(1, 0, message.author.tag); // 'name' is the Discord 'tag' (e.g. hydrabolt#0001)
+        }
+
+        if (tokens.length !== 3) {
+          message.reply('Sorry, I didn\'t understand you. Please try again?\n' +
+            'Here\'s the format I understand:\n' +
+            '```\n!addalias [your-name] <newAlias>\n```');
+          break;
+        }
+
+        const nameOrAlias = tokens[1];
+        const newAlias = tokens[2];
+        const aliasesLookup = await getAliasesLookup(googleClient);
+
+        // check if new alias is available
+        if (aliasesLookup[newAlias] !== undefined) {
+          message.reply(`Sorry, ${aliases[newAlias]} already has that alias!`);
+          break;
+        }
+        if (Object.values(aliasesLookup).includes(newAlias)) {
+          message.reply(`Sorry, that's already someone's name!`);
+          break;
+        }
+        const name = getMemberFromAlias(aliasesLookup, nameOrAlias);
+        const queryAboutSelf = name === getMemberFromAlias(aliasesLookup, message.author.tag);
+        const nameToPrint = queryAboutSelf ? 'you' : name;
+        const nameToPrintPossessive = queryAboutSelf ? 'your' : 'their';
+
+        addAlias(googleClient, name, newAlias);
+        message.reply(`${getRandomAppreciation()}, now ${nameToPrint} can use ` +
+          `\`${newAlias}\` instead of ${nameToPrintPossessive} name`);
         break;
       }
 
@@ -213,6 +248,21 @@ async function getTotalHours(googleClient) {
   result.forEach(row => people[row[0]] += +row[3]);
 
   return people;
+}
+  
+async function addAlias(googleClient, name, newAlias) {
+  await sheets.spreadsheets.values.append({
+    auth: googleClient,
+    range: 'aliases_table_next',
+    spreadsheetId: process.env.VOLUNTEERS_SPREADSHEET_ID,
+    resource: {
+      values: [
+        [newAlias, name],
+      ],
+    },
+    valueInputOption: 'RAW',
+    insertDataOption: 'INSERT_ROWS',
+  });
 }
 
 async function getAliasesTable(googleClient) {
