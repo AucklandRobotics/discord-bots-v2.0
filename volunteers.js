@@ -127,8 +127,9 @@ module.exports = async function startVolunteers() {
         // display number of hours volunteered
         const nameToPrint = queryAboutSelf ? `You've` : `${name}'s`;
         message.reply(`${nameToPrint} volunteered for ${+hours.toFixed(1)} hours!`);
+      }
         
-      /* !getHours [member] <newAlias> */
+      /* !addalias [member] <newAlias> */
       case '!addalias': {
         if (tokens.length === 2) {
             tokens.splice(1, 0, message.author.tag); // 'name' is the Discord 'tag' (e.g. hydrabolt#0001)
