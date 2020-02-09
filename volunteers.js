@@ -353,10 +353,10 @@ async function discordIdToTag(guild, id) {
     if (match !== null) {
         try {
             volunteerMember = await guild.fetchMember(match[1]);
+            return volunteerMember.user.tag;
         } catch (err) {
             console.error("There is no guild member with the provided ID.", err);
         }
-        return volunteerMember.user.tag;
     }
     return null;
 }
