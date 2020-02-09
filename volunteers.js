@@ -358,5 +358,5 @@ async function discordIdToTag(guild, id) {
         }
         return volunteerMember.user.tag;
     }
-    return null
+    return null;
 }
