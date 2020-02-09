@@ -70,7 +70,7 @@ module.exports = async function startVolunteers() {
           break;
         }
 
-        const name = tokens[1];
+        const name = await discordIdToTag(message.guild, tokens[1]) || tokens[1];
         const description = tokens[2];
 
         if (isNaN(tokens[3])) {
@@ -346,4 +346,17 @@ async function getCurrentMilestone(googleClient) {
   ));
 
   return bestMilestone;
+}
+
+async function discordIdToTag(guild, id) {
+    const match = id.match(/<@!?(\d+)>/);
+    if (match !== null) {
+        try {
+            volunteerMember = await guild.fetchMember(match[1]);
+            return volunteerMember.user.tag;
+        } catch (err) {
+            console.error("There is no guild member with the provided ID.", err);
+        }
+    }
+    return null;
 }
