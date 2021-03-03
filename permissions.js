@@ -86,7 +86,7 @@ module.exports = async function startVolunteers() {
               ' Register at aura.org.nz/signup first. Yell at Reeve if you have already.');
           } else if (error instanceof Error && error.message === 'NOT RECORDED'){
             message.reply(getRandomFail() +
-              "Looks like you've signed up but we haven't recorded your payment yet. Yell at Sato if you haven't already." );
+              " Looks like you've signed up but we haven't recorded your payment yet. Yell at Sato if you haven't already." );
           } else {
             console.error("Received firstName", firstName, ", lastName", lastName,"and idNumber", idNumber, ". Error updating roles: ", error);
             console.log(message.channel.type, message.member);
