@@ -71,7 +71,7 @@ module.exports = async function startVolunteers() {
           const isFullMember = await getMembership(googleClient, idNumber);
           if (!isFullMember) {
             message.reply(getRandomFail() +
-              ' You haven\'t paid your fees! Yell at Reeve if you have paid.');
+              ' You haven\'t paid your fees! Yell at Sato if you have paid.');
             break;
           }
 
@@ -83,10 +83,10 @@ module.exports = async function startVolunteers() {
         catch (error) {
           if (error instanceof Error && error.message === 'NOT REGISTERED') {
             message.reply(getRandomFail() +
-              ' Register at aura.org.nz/signup first. Yell at Hideaki if you have already.');
+              ' Register at aura.org.nz/signup first. Yell at Reeve if you have already.');
           } else {
             console.error('Error updating roles: ', error);
-            message.reply(getRandomFail() + ' Something went wrong, Yell at Hideaki.');
+            message.reply(getRandomFail() + ' Something went wrong, Yell at Reeve.');
           }
         }
         break;
@@ -128,10 +128,15 @@ async function getMembership(googleClient, idNumber) {
   }
   var today = new Date();
   var sem2Start = new Date(today.getFullYear(), 6); // Start requiring Sem 2 payments from July.
-  if (sem2Start - today > 0) {
-    return paidResult[0] === 'Yes';
-  } else {
-    return paidResult[1] === 'Yes';
+  
+  if (paidResult[2] === 'Yes'){
+    return paidResult[2] === 'Yes'; //Check if member paid for Sem 1 + 2
+  } else {    
+    if (sem2Start - today > 0) {
+      return paidResult[0] === 'Yes'; //Check if member paid for Sem 1
+    } else {
+      return paidResult[1] === 'Yes'; //Check if member paid for Sem 2
+    }
   }
 }
 
