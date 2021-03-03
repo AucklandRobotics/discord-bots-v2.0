@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "ascii-table": "0.0.9",
-    "discord.js": ">=12.5.1",
+    "discord.js": ">=12.5.0",
     "googleapis": "^38.0.0"
   }
 }
