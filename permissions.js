@@ -85,8 +85,8 @@ module.exports = async function startVolunteers() {
             message.reply(getRandomFail() +
               ' Register at aura.org.nz/signup first. Yell at Reeve if you have already.');
           } else {
-            console.log(user);
             console.error("Received firstName", firstName, ", lastName", lastName,"and idNumber", idNumber, ". Error updating roles: ", error);
+            console.log(user);
             message.reply(getRandomFail() + ' Something went wrong, Yell at Reeve.');
           }
         }
