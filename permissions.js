@@ -77,7 +77,7 @@ module.exports = async function startVolunteers() {
 
           const user = message.member;
           await user.setNickname(firstName + ' ' + lastName);
-          await user.addRole(message.guild.roles.find('name', 'Full Member'));
+          await user.roles.add(message.guild.roles.find('name', 'Full Member'));
           message.reply(getRandomSuccess());
         }
         catch (error) {
