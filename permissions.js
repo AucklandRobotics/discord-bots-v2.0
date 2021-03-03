@@ -84,6 +84,9 @@ module.exports = async function startVolunteers() {
           if (error instanceof Error && error.message === 'NOT REGISTERED') {
             message.reply(getRandomFail() +
               ' Register at aura.org.nz/signup first. Yell at Reeve if you have already.');
+          } else if (error instanceof Error && error.message === 'NOT RECORDED'){
+            message.reply(getRandomFail() +
+              "Looks like you've signed up but we haven't recorded your payment yet. Yell at Sato if you haven't already." );
           } else {
             console.error("Received firstName", firstName, ", lastName", lastName,"and idNumber", idNumber, ". Error updating roles: ", error);
             console.log(message.channel.type, message.member);
@@ -122,10 +125,15 @@ async function getValues(googleClient,rangeName) {
 
 async function getMembership(googleClient, idNumber) {
   const idList = (await getValues(googleClient,'id')).data.values;
+  const signupIdList = (await getValues(googleClient,'signupId')).data.values;
   const index = idList.findIndex(cell => cell[0] === idNumber);
+  const signupIndex = signupIdList.findIndex(cell => cell[0] === idNumber);
   const paidResult = (await getValues(googleClient,'paid')).data.values[index];
-  if(index === -1) {
+  if(signupIndex === -1) {
     throw new Error('NOT REGISTERED');
+  }
+  if(index === -1) {
+    throw new Error('NOT RECORDED');
   }
   var today = new Date();
   var sem2Start = new Date(today.getFullYear(), 6); // Start requiring Sem 2 payments from July.
