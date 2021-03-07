@@ -44,7 +44,7 @@ async function loadConfig() {
 module.exports = async function startVolunteers() {
   await loadConfig();
 
-  const discordClient = new Discord.Client({ ws: { intents: ['GUILDS', 'GUILD_MESSAGES'] } });
+  const discordClient = new Discord.Client({ ws: { intents: ['GUILD_PRESENCES', 'GUILD_MEMBERS'] }});
   const googleClient = await connectToGoogleSheets();
 
   discordClient.on('ready', () => {
