@@ -56,6 +56,7 @@ module.exports = async function startVolunteers() {
     // Send the message to a designated channel on a server:
     console.log('New Member joined the server');
     const channel = discordClient.channels.cache.get('817219700467302461');
+    console.log("Channel:", discordClient.channels.cache.get('817219700467302461'));
     // Do nothing if the channel wasn't found on this server
     if (!channel) return;
     console.log('Able to find welcome channel');
