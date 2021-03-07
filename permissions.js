@@ -77,6 +77,7 @@ module.exports = async function startVolunteers() {
 
           const user = message.member;
           await user.setNickname(firstName + ' ' + lastName);
+          console.log("Received:", isMember)
           if (isMember === 1 ){
             await user.roles.add(message.guild.roles.cache.find(role => role.name === 'Full Member'));
           } else if (isMember === 2 ){
