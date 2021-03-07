@@ -50,6 +50,16 @@ module.exports = async function startVolunteers() {
   discordClient.on('ready', () => {
     console.log(`Logged in as ${discordClient.user.tag}!`);
   });
+  
+  // Create an event listener for new guild members
+  client.on('guildMemberAdd', member => {
+    // Send the message to a designated channel on a server:
+    const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome');
+    // Do nothing if the channel wasn't found on this server
+    if (!channel) return;
+    // Send the message, mentioning the member
+    channel.send(`Welcome to the AURA Discord server, ${member}! To get access to the rest of the server, make sure to Verify your AURA Membership at <#816653958042746960>.`);
+  });
 
   discordClient.on('message', async message => {
 
