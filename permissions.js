@@ -78,10 +78,16 @@ module.exports = async function startVolunteers() {
           const user = message.member;
           await user.setNickname(firstName + ' ' + lastName);
           console.log("Received:", isMember)
+
+          const fullMemberRole = message.guild.roles.cache.find(role => role.name === 'Full Member')
+          const associateMemberRole = message.guild.roles.cache.find(role => role.name === 'Associate Member')
+
           if (isMember === true ){
-            await user.roles.add('Full Member');
+            await user.roles.remove(associateMemberRole)
+            await user.roles.add(fullMemberRole);
           } else if (isMember === 2 ){
-            await user.roles.add(message.guild.roles.cache.find(role => role.name === 'Associate Member'));
+            await user.roles.remove(fullMemberRole)
+            await user.roles.add(associateMemberRole);
           } else {
             message.reply(getRandomFail() + 'Something went wrong, Yell at Reeve.');
             break;
