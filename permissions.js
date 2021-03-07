@@ -55,8 +55,12 @@ module.exports = async function startVolunteers() {
   discordClient.on('guildMemberAdd', member => {
     // Send the message to a designated channel on a server:
     console.log('New Member joined the server');
-    const channel = discordClient.channels.cache.get('816653958042746960');
+    const channel = discordClient.channels.cache.get('#816653958042746960');
     // Do nothing if the channel wasn't found on this server
+    console.log("LOG 1:", discordClient.channels.cache.get('816653958042746960'))
+    console.log("LOG 2:",discordClient.channels.cache.get('816653958042746960'))
+    console.log("LOG 3:",discordClient.channels.cache.get(816653958042746960))
+    console.log("LOG 4:",discordClient.channels.cache.get(#816653958042746960))
     if (!channel) return;
     console.log('Able to find welcome channel');
     // Send the message, mentioning the member
