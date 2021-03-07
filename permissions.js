@@ -60,7 +60,6 @@ module.exports = async function startVolunteers() {
     console.log("LOG 1:", discordClient.channels.cache.get('816653958042746960'))
     console.log("LOG 2:",discordClient.channels.cache.get('816653958042746960'))
     console.log("LOG 3:",discordClient.channels.cache.get(816653958042746960))
-    console.log("LOG 4:",discordClient.channels.cache.get(#816653958042746960))
     if (!channel) return;
     console.log('Able to find welcome channel');
     // Send the message, mentioning the member
