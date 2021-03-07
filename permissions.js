@@ -52,7 +52,7 @@ module.exports = async function startVolunteers() {
   });
   
   // Create an event listener for new guild members
-  client.on('guildMemberAdd', member => {
+  discordClient.on('guildMemberAdd', member => {
     // Send the message to a designated channel on a server:
     const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome');
     // Do nothing if the channel wasn't found on this server
