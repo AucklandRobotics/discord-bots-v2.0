@@ -44,7 +44,7 @@ async function loadConfig() {
 module.exports = async function startVolunteers() {
   await loadConfig();
 
-  const discordClient = new Discord.Client({ ws: { intents: ['GUILD_PRESENCES', 'GUILD_MEMBERS'] }});
+  const discordClient = new Discord.Client({ ws: { intents: ['GUILD_PRESENCES', 'GUILD_MEMBERS', 'GUILDS', 'GUILD_MESSAGES'] }});
   const googleClient = await connectToGoogleSheets();
 
   discordClient.on('ready', () => {
@@ -62,7 +62,7 @@ module.exports = async function startVolunteers() {
   });
 
   discordClient.on('message', async message => {
-
+    console.log("Received a command!");
     const tokens = message.content.trim().split(/\s+/g);
 
     switch (tokens[0]) {
