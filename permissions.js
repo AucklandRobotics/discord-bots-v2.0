@@ -68,29 +68,34 @@ module.exports = async function startVolunteers() {
         const lastName = tokens[2];
         const idNumber = tokens[3];
         try {
-          const isFullMember = await getMembership(googleClient, idNumber);
-          if (!isFullMember) {
+          const isMember = await getMembership(googleClient, idNumber);
+          if (!isMember) {
             message.reply(getRandomFail() +
-              ' You haven\'t paid your fees! Yell at Sato if you have paid.');
+              'You haven\'t paid your fees! Yell at Sato if you have paid.');
             break;
           }
 
           const user = message.member;
           await user.setNickname(firstName + ' ' + lastName);
-          await user.roles.add(message.guild.roles.cache.find(role => role.name === 'Full Member'));
+          if (isMember === 1 ){
+            await user.roles.add(message.guild.roles.cache.find(role => role.name === 'Full Member'));
+          } else if (isMember === 2 ){
+            await user.roles.add(message.guild.roles.cache.find(role => role.name === 'Associate Member'));
+          }
+          
           message.reply(getRandomSuccess());
         }
         catch (error) {
           if (error instanceof Error && error.message === 'NOT REGISTERED') {
             message.reply(getRandomFail() +
-              ' Register at aura.org.nz/signup first. Yell at Reeve if you have already.');
+              'We don\'t have that student ID in our system. Register at aura.org.nz/signup first. Yell at Reeve if you have already.');
           } else if (error instanceof Error && error.message === 'NOT RECORDED'){
             message.reply(getRandomFail() +
-              " Looks like you've signed up but we haven't recorded your payment yet. Yell at Sato if you haven't already." );
+              'Looks like you\'ve signed up but we haven\'t recorded your payment yet. Yell at Sato if you haven\'t already.' );
           } else {
             console.error("Received firstName", firstName, ", lastName", lastName,"and idNumber", idNumber, ". Error updating roles: ", error);
             console.log(message.channel.type, message.member);
-            message.reply(getRandomFail() + ' Something went wrong, Yell at Reeve.');
+            message.reply(getRandomFail() + 'Something went wrong, Yell at Reeve.');
           }
         }
         break;
@@ -126,27 +131,37 @@ async function getValues(googleClient,rangeName) {
 async function getMembership(googleClient, idNumber) {
   const idList = (await getValues(googleClient,'id')).data.values;
   const signupIdList = (await getValues(googleClient,'signupId')).data.values;
-  const index = idList.findIndex(cell => cell[0] === idNumber);
+  const associateIdList = (await getValues(googleClient, 'associateId')).data.values;
+  const paidIndex = idList.findIndex(cell => cell[0] === idNumber);
   const signupIndex = signupIdList.findIndex(cell => cell[0] === idNumber);
-  const paidResult = (await getValues(googleClient,'paid')).data.values[index];
+  const paidResult = (await getValues(googleClient,'paid')).data.values[paidIndex];
+  const isAssociate = associateIdList.findIndex((cell) => cell[0] === idNumber);
+
   if(signupIndex === -1) {
     throw new Error('NOT REGISTERED');
   }
-  if(index === -1) {
-    throw new Error('NOT RECORDED');
-  }
+
   var today = new Date();
   var sem2Start = new Date(today.getFullYear(), 6); // Start requiring Sem 2 payments from July.
   
-  if (paidResult[2] === 'Yes'){
-    return paidResult[2] === 'Yes'; //Check if member paid for Sem 1 + 2
-  } else {    
-    if (sem2Start - today > 0) {
-      return paidResult[0] === 'Yes'; //Check if member paid for Sem 1
-    } else {
-      return paidResult[1] === 'Yes'; //Check if member paid for Sem 2
+  if (isAssociate){
+    return 2;
+  } else{
+
+    if(paidIndex === -1) {
+      throw new Error('NOT RECORDED');
+    }
+    if (paidResult[2] === 'Yes'){
+      return paidResult[2] === 'Yes'; //Check if member paid for Sem 1 + 2
+    } else {    
+      if (sem2Start - today > 0) {
+        return paidResult[0] === 'Yes'; //Check if member paid for Sem 1
+      } else {
+        return paidResult[1] === 'Yes'; //Check if member paid for Sem 2
+      }
     }
   }
+
 }
 
 const SUCCESS = [
@@ -161,8 +176,8 @@ function getRandomSuccess() {
   return SUCCESS[index];
 }
 const FAIL = [
-  'Sorry, Hans. Wrong guess.',
-  'Uh-oh spaghyeeti-O\'s!', // This isn't a Die-Hard reference.
+  'Sorry, Hans. Wrong guess.\n',
+  'Uh-oh spaghyeeti-O\'s!\n', // This isn't a Die-Hard reference.
 ];
 
 function getRandomFail() {
