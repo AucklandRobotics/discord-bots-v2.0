@@ -54,9 +54,11 @@ module.exports = async function startVolunteers() {
   // Create an event listener for new guild members
   discordClient.on('guildMemberAdd', member => {
     // Send the message to a designated channel on a server:
+    console.log('New Member joined the server');
     const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome');
     // Do nothing if the channel wasn't found on this server
     if (!channel) return;
+    console.log('Able to find welcome channel');
     // Send the message, mentioning the member
     channel.send(`Welcome to the AURA Discord server, ${member}! To get access to the rest of the server, make sure to Verify your AURA Membership at <#816653958042746960>.`);
   });
