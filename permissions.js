@@ -136,7 +136,6 @@ async function getMembership(googleClient, idNumber) {
   const signupIndex = signupIdList.findIndex(cell => cell[0] === idNumber);
   const paidResult = (await getValues(googleClient,'paid')).data.values[paidIndex];
   const isAssociate = associateIdList.findIndex((cell) => cell[0] === idNumber);
-  console.log("isAssociate:", isAssociate);
 
   if(signupIndex === -1) {
     throw new Error('NOT REGISTERED');
@@ -145,8 +144,7 @@ async function getMembership(googleClient, idNumber) {
   var today = new Date();
   var sem2Start = new Date(today.getFullYear(), 6); // Start requiring Sem 2 payments from July.
   
-  if (isAssociate){
-    console.log("Associate Member Verified");
+  if (isAssociate !== -1){
     return 2;
   } else{
 
