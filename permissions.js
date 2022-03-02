@@ -81,7 +81,7 @@ module.exports = async function startVolunteers() {
           const isMember = await getMembership(googleClient, idNumber);
           if (!isMember) {
             message.reply(getRandomFail() +
-              'You haven\'t paid your fees! Yell at Sato if you have paid.');
+              'You haven\'t paid your fees! Yell at Daniel if you have paid.');
             break;
           }
 
@@ -99,7 +99,7 @@ module.exports = async function startVolunteers() {
             await user.roles.remove(fullMemberRole)
             await user.roles.add(associateMemberRole);
           } else {
-            message.reply(getRandomFail() + 'Something went wrong, Yell at Reeve.');
+            message.reply(getRandomFail() + 'Something went wrong, Yell at Sato.');
             break;
           }
           
@@ -108,14 +108,14 @@ module.exports = async function startVolunteers() {
         catch (error) {
           if (error instanceof Error && error.message === 'NOT REGISTERED') {
             message.reply(getRandomFail() +
-              'We don\'t have that student ID in our system. Register at aura.org.nz/signup first. Yell at Reeve if you have already.');
+              'We don\'t have that student ID in our system. Register at aura.org.nz/signup first. Yell at Sato if you have already.');
           } else if (error instanceof Error && error.message === 'NOT RECORDED'){
             message.reply(getRandomFail() +
-              'Looks like you\'ve signed up but we haven\'t recorded your payment yet. Yell at Sato if you haven\'t already.' );
+              'Looks like you\'ve signed up but we haven\'t recorded your payment yet. Yell at Daniel if you haven\'t already.' );
           } else {
             console.error("Received firstName", firstName, ", lastName", lastName,"and idNumber", idNumber, ". Error updating roles: ", error);
             console.log(message.channel.type, message.member);
-            message.reply(getRandomFail() + 'Something went wrong, Yell at Reeve.');
+            message.reply(getRandomFail() + 'Something went wrong, Yell at Sato.');
           }
         }
         break;
