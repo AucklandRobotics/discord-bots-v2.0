@@ -198,6 +198,7 @@ function getRandomSuccess() {
 const FAIL = [
   'Sorry, Hans. Wrong guess.\n',
   'Uh-oh spaghyeeti-O\'s!\n', // This isn't a Die-Hard reference.
+  'What the dog.\n'
 ];
 
 function getRandomFail() {
